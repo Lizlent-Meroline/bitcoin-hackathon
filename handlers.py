@@ -52,3 +52,10 @@ async def handle_meter_reading(
     # TODO: Create Lightning invoice via teammate's lightning.py
     # invoice = await create_invoice(sats_amount)
     
+    return {
+        "message": f"✅ Meter reading received: {reading.kwh_delta} kWh = {sats_amount} sats",
+        "payment_id": payment.id,
+        "sats": sats_amount,
+        "status": "pending"
+    }
+
