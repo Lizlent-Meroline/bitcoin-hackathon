@@ -5,6 +5,7 @@ from datetime import datetime
 import os
 
 Base = declarative_base()
+
 class Payment(Base):
     __tablename__ = "payments"
     
@@ -16,16 +17,26 @@ class Payment(Base):
     invoice = Column(String, nullable=False)
     status = Column(String, default="pending")
     created_at = Column(DateTime, default=datetime.utcnow)
+
 class Producer(Base):
     __tablename__ = "producers"
     
     id = Column(String, primary_key=True)
     lightning_address = Column(String, nullable=False)
     total_earned = Column(Integer, default=0)
+
 # Database setup
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./solarsats.db")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 def init_db():
     Base.metadata.create_all(bind=engine)
     print("✅ Database initialized")
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
