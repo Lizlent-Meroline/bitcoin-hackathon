@@ -75,3 +75,7 @@ async def get_producer_stats(producer_id: str, db: Session = Depends(get_db)):
         "status": "active"
     }
 
+@router.get("/producer/{producer_id}/history")
+async def get_payment_history(producer_id: str, db: Session = Depends(get_db)):
+    """Get payment history for a producer"""
+    
