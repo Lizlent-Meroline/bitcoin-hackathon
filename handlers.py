@@ -22,3 +22,10 @@ class PaymentResponse(BaseModel):
     sats: int
     status: str
 
+@router.post("/meter/reading")
+async def handle_meter_reading(
+    reading: MeterReadingRequest,
+    db: Session = Depends(get_db)
+):
+    """Handle incoming meter readings from smart meters"""
+    
