@@ -26,3 +26,6 @@ class Producer(Base):
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./solarsats.db")
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def init_db():
+    Base.metadata.create_all(bind=engine)
+    print("✅ Database initialized")
