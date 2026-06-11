@@ -79,3 +79,7 @@ async def get_producer_stats(producer_id: str, db: Session = Depends(get_db)):
 async def get_payment_history(producer_id: str, db: Session = Depends(get_db)):
     """Get payment history for a producer"""
     
+    payments = db.query(Payment).filter(
+        Payment.producer_id == producer_id
+    ).order_by(Payment.created_at.desc()).limit(50).all()
+    
