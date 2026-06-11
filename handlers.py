@@ -63,3 +63,8 @@ async def handle_meter_reading(
 async def get_producer_stats(producer_id: str, db: Session = Depends(get_db)):
     """Get total earnings for a producer"""
     
+    total_sats = db.query(Payment).filter(
+        Payment.producer_id == producer_id,
+        Payment.status == "paid"
+    ).with_entities(func.sum(Payment.sats_amount)).scalar() or 0
+    
