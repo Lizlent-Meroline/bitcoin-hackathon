@@ -98,3 +98,7 @@ async def get_payment_history(producer_id: str, db: Session = Depends(get_db)):
         ]
     }
 
+@router.post("/producer/register")
+async def register_producer(producer_id: str, lightning_address: str, db: Session = Depends(get_db)):
+    """Register a new producer"""
+    
