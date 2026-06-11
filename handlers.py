@@ -110,3 +110,12 @@ async def register_producer(producer_id: str, lightning_address: str, db: Sessio
     db.merge(producer)
     db.commit()
     
+    return {
+        "message": "Producer registered successfully",
+        "producer_id": producer_id,
+        "lightning_address": lightning_address
+    }
+
+@router.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "solarsats-backend"}
