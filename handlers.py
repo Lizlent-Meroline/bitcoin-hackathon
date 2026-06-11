@@ -9,3 +9,10 @@ from config import config
 
 router = APIRouter()
 
+# Pydantic models for request/response
+class MeterReadingRequest(BaseModel):
+    meter_id: str
+    kwh_delta: float
+    timestamp: int
+    signature: str
+
