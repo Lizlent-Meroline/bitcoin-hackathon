@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 
-from database import get_db, Payment, Producer
+from database import get_db
+from models import Payment, Producer
 from config import config
+from meter import process_meter_reading
 
 router = APIRouter()
 
@@ -22,6 +25,10 @@ class PaymentResponse(BaseModel):
     sats: int
     status: str
 
+class ProducerRegisterRequest(BaseModel):
+    producer_id: str
+    lightning_address: str
+
 @router.post("/meter/reading")
 async def handle_meter_reading(
     reading: MeterReadingRequest,
@@ -29,44 +36,36 @@ async def handle_meter_reading(
 ):
     """Handle incoming meter readings from smart meters"""
     
-    # Calculate sats (50 sats per kWh)
-    sats_amount = int(reading.kwh_delta * config.SATOSHIS_PER_KWH)
-    
-    # TODO: Verify HMAC signature (waiting for teammate's utils.py)
-    # For now, assume valid
-    
-    # Create payment record
-    payment = Payment(
-        producer_id=reading.meter_id,
-        consumer_id="consumer-001",
-        kwh=reading.kwh_delta,
-        sats_amount=sats_amount,
-        invoice="pending",
-        status="pending"
+    # Process the meter reading with HMAC verification
+    success, payment, message = await process_meter_reading(
+        meter_id=reading.meter_id,
+        kwh_delta=reading.kwh_delta,
+        timestamp=reading.timestamp,
+        signature=reading.signature,
+        db=db
     )
     
-    db.add(payment)
-    db.commit()
-    db.refresh(payment)
+    if not success:
+        raise HTTPException(status_code=401, detail=message)
     
     # TODO: Create Lightning invoice via teammate's lightning.py
-    # invoice = await create_invoice(sats_amount)
+    # invoice = await create_invoice(payment.sats_amount)
     
     return {
-        "message": f"✅ Meter reading received: {reading.kwh_delta} kWh = {sats_amount} sats",
+        "message": message,
         "payment_id": payment.id,
-        "sats": sats_amount,
-        "status": "pending"
+        "sats": payment.sats_amount,
+        "status": payment.status
     }
 
 @router.get("/producer/{producer_id}/stats")
 async def get_producer_stats(producer_id: str, db: Session = Depends(get_db)):
     """Get total earnings for a producer"""
     
-    total_sats = db.query(Payment).filter(
+    total_sats = db.query(func.sum(Payment.sats_amount)).filter(
         Payment.producer_id == producer_id,
         Payment.status == "paid"
-    ).with_entities(func.sum(Payment.sats_amount)).scalar() or 0
+    ).scalar() or 0
     
     return {
         "producer_id": producer_id,
@@ -99,7 +98,11 @@ async def get_payment_history(producer_id: str, db: Session = Depends(get_db)):
     }
 
 @router.post("/producer/register")
-async def register_producer(producer_id: str, lightning_address: str, db: Session = Depends(get_db)):
+async def register_producer(
+    producer_id: str, 
+    lightning_address: str, 
+    db: Session = Depends(get_db)
+):
     """Register a new producer"""
     
     producer = Producer(
@@ -119,7 +122,3 @@ async def register_producer(producer_id: str, lightning_address: str, db: Sessio
 @router.get("/health")
 async def health_check():
     return {"status": "ok", "service": "solarsats-backend"}
-
-# Add import for meter functions
-from meter import process_meter_reading
-
