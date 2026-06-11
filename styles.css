@@ -158,5 +158,8 @@ h1 {
     text-align: center;
     margin-top: 80%;
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--text-muted); 
  }
+ footer:hover {
+    color: var(--text-main);
+ }  
