@@ -49,3 +49,6 @@ async def handle_meter_reading(
     db.commit()
     db.refresh(payment)
     
+    # TODO: Create Lightning invoice via teammate's lightning.py
+    # invoice = await create_invoice(sats_amount)
+    
