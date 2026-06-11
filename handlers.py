@@ -29,3 +29,6 @@ async def handle_meter_reading(
 ):
     """Handle incoming meter readings from smart meters"""
     
+    # Calculate sats (50 sats per kWh)
+    sats_amount = int(reading.kwh_delta * config.SATOSHIS_PER_KWH)
+    
