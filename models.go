@@ -12,3 +12,9 @@ type Payment struct {
     Status     string    `json:"status"`
     CreatedAt  time.Time `json:"created_at"`
 }
+type MeterReading struct {
+    MeterID   string  `json:"meter_id"`
+    KWhDelta  float64 `json:"kwh_delta"`
+    Timestamp int64   `json:"timestamp"`
+    Signature string  `json:"signature"`
+}
