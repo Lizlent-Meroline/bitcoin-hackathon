@@ -59,3 +59,7 @@ async def handle_meter_reading(
         "status": "pending"
     }
 
+@router.get("/producer/{producer_id}/stats")
+async def get_producer_stats(producer_id: str, db: Session = Depends(get_db)):
+    """Get total earnings for a producer"""
+    
