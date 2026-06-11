@@ -22,3 +22,7 @@ class Producer(Base):
     id = Column(String, primary_key=True)
     lightning_address = Column(String, nullable=False)
     total_earned = Column(Integer, default=0)
+# Database setup
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./solarsats.db")
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
