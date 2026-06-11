@@ -119,3 +119,7 @@ async def register_producer(producer_id: str, lightning_address: str, db: Sessio
 @router.get("/health")
 async def health_check():
     return {"status": "ok", "service": "solarsats-backend"}
+
+# Add import for meter functions
+from meter import process_meter_reading
+
