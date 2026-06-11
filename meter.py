@@ -71,3 +71,20 @@ async def process_meter_reading(
     
     return True, payment, f"Valid reading: {kwh_delta} kWh = {sats_amount} sats"
 
+
+def generate_hmac_signature(meter_id: str, kwh_delta: float, timestamp: int) -> str:
+    """
+    Generate HMAC signature for a meter reading
+    Used by smart meters to sign their readings
+    This is a helper for testing - meters will implement this
+    """
+    message = f"{meter_id}:{kwh_delta}:{timestamp}"
+    
+    signature = hmac.new(
+        config.SECRET_KEY.encode(),
+        message.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    
+    return signature
+
