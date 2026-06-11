@@ -35,3 +35,17 @@ async def handle_meter_reading(
     # TODO: Verify HMAC signature (waiting for teammate's utils.py)
     # For now, assume valid
     
+    # Create payment record
+    payment = Payment(
+        producer_id=reading.meter_id,
+        consumer_id="consumer-001",
+        kwh=reading.kwh_delta,
+        sats_amount=sats_amount,
+        invoice="pending",
+        status="pending"
+    )
+    
+    db.add(payment)
+    db.commit()
+    db.refresh(payment)
+    
