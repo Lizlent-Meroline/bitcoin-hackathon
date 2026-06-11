@@ -83,3 +83,18 @@ async def get_payment_history(producer_id: str, db: Session = Depends(get_db)):
         Payment.producer_id == producer_id
     ).order_by(Payment.created_at.desc()).limit(50).all()
     
+    return {
+        "producer_id": producer_id,
+        "total_count": len(payments),
+        "payments": [
+            {
+                "id": p.id,
+                "kwh": p.kwh,
+                "sats": p.sats_amount,
+                "status": p.status,
+                "created_at": p.created_at.isoformat()
+            }
+            for p in payments
+        ]
+    }
+
