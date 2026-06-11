@@ -102,3 +102,11 @@ async def get_payment_history(producer_id: str, db: Session = Depends(get_db)):
 async def register_producer(producer_id: str, lightning_address: str, db: Session = Depends(get_db)):
     """Register a new producer"""
     
+    producer = Producer(
+        id=producer_id,
+        lightning_address=lightning_address
+    )
+    
+    db.merge(producer)
+    db.commit()
+    
