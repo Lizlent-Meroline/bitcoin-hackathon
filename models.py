@@ -16,3 +16,10 @@ class Payment(Base):
     status = Column(String, default="pending")
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class Producer(Base):
+    __tablename__ = "producers"
+    
+    id = Column(String, primary_key=True)
+    lightning_address = Column(String, nullable=False)
+    total_earned = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
