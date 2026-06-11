@@ -68,3 +68,10 @@ async def get_producer_stats(producer_id: str, db: Session = Depends(get_db)):
         Payment.status == "paid"
     ).with_entities(func.sum(Payment.sats_amount)).scalar() or 0
     
+    return {
+        "producer_id": producer_id,
+        "total_sats": total_sats,
+        "total_kwh": total_sats / config.SATOSHIS_PER_KWH,
+        "status": "active"
+    }
+
