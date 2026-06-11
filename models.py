@@ -22,4 +22,4 @@ class Producer(Base):
     id = Column(String, primary_key=True)
     lightning_address = Column(String, nullable=False)
     total_earned = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    # created_at removed for simplicity
