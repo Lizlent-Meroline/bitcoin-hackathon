@@ -88,3 +88,43 @@ def generate_hmac_signature(meter_id: str, kwh_delta: float, timestamp: int) -> 
     
     return signature
 
+
+async def batch_process_readings(
+    readings: list,
+    db: Session
+) -> dict:
+    """
+    Process multiple meter readings at once
+    Returns summary of success/failed
+    """
+    results = {
+        "total": len(readings),
+        "successful": 0,
+        "failed": 0,
+        "total_sats": 0,
+        "total_kwh": 0.0,
+        "errors": []
+    }
+    
+    for reading in readings:
+        success, payment, message = await process_meter_reading(
+            meter_id=reading.get("meter_id"),
+            kwh_delta=reading.get("kwh_delta"),
+            timestamp=reading.get("timestamp"),
+            signature=reading.get("signature"),
+            db=db
+        )
+        
+        if success and payment:
+            results["successful"] += 1
+            results["total_sats"] += payment.sats_amount
+            results["total_kwh"] += payment.kwh
+        else:
+            results["failed"] += 1
+            results["errors"].append({
+                "meter_id": reading.get("meter_id"),
+                "error": message
+            })
+    
+    return results
+
