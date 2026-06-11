@@ -16,3 +16,9 @@ class MeterReadingRequest(BaseModel):
     timestamp: int
     signature: str
 
+class PaymentResponse(BaseModel):
+    payment_id: int
+    invoice: str
+    sats: int
+    status: str
+
