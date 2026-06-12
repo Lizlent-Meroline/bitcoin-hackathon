@@ -1,0 +1,1 @@
+"""SolarSats backend package."""
