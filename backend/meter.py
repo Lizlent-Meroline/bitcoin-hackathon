@@ -7,8 +7,8 @@ from fastapi import HTTPException, Depends
 from sqlalchemy.orm import Session
 
 from config import config
-from database import get_db
-from models import Payment
+from backend.database import get_db
+from backend.models import Payment
 
 
 def verify_hmac_signature(meter_id: str, kwh_delta: float, timestamp: int, signature: str) -> bool:
